@@ -450,8 +450,7 @@ class SonarrYTDL(object):
                                     })
                                     ytdl_format_options.update({
                                         'writesubtitles': True,
-                                        'allsubtitles': True,
-                                        'writeautomaticsub': True,
+                                        'embedsubtitles': True,
                                         'subtitleslangs': ser['subtitles_languages'],
                                         'postprocessors': postprocessors,
                                     })
