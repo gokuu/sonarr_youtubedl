@@ -1,48 +1,59 @@
+<div align="center">
+
 # sonarr_youtubedl
+
+*Automatically download web series for Sonarr using YT-DLP*
 
 ![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/fireph/sonarr_youtubedl/main.yaml?style=flat-square)
 ![Docker Pulls](https://img.shields.io/docker/pulls/dungfu/sonarr_youtubedl?style=flat-square)
 ![Docker Stars](https://img.shields.io/docker/stars/dungfu/sonarr_youtubedl?style=flat-square)
-[![Docker Hub](https://img.shields.io/badge/Open%20On-DockerHub-blue)](https://hub.docker.com/r/dungfu/sonarr_youtubedl)
-[![GitHub](https://img.shields.io/badge/GitHub-Repository-blue)](https://github.com/fireph/sonarr_youtubedl)
 
-sonarr_youtubedl is a [Sonarr](https://sonarr.tv/) companion script to allow the automatic downloading of web series normally not available for Sonarr to search for. Using [YT-DLP](https://github.com/yt-dlp/yt-dlp) (a youtube-dl fork with added features) it allows you to download your webseries from the list of [supported sites](https://github.com/yt-dlp/yt-dlp/blob/master/supportedsites.md).
+[![Docker Hub](https://img.shields.io/badge/Open%20On-DockerHub-blue?style=for-the-badge&logo=docker)](https://hub.docker.com/r/dungfu/sonarr_youtubedl)
+[![GitHub](https://img.shields.io/badge/GitHub-Repository-blue?style=for-the-badge&logo=github)](https://github.com/fireph/sonarr_youtubedl)
+
+</div>
+
+---
+
+## Overview
+
+**sonarr_youtubedl** is a powerful [Sonarr](https://sonarr.tv/) companion script that enables automatic downloading of web series normally unavailable to Sonarr. Leveraging [YT-DLP](https://github.com/yt-dlp/yt-dlp) (a feature-rich youtube-dl fork), it seamlessly downloads your favorite web series from hundreds of [supported sites](https://github.com/yt-dlp/yt-dlp/blob/master/supportedsites.md).
 
 ## Features
 
-* Downloading **Web Series** using online sources normally unavailable to Sonarr
-* Ability to specify the downloaded video format globally or per series
-* Downloads new episodes automatically once available
-* Imports directly to Sonarr and it can then update your plex as and example
-* Allows setting time offsets to handle prerelease series
-* Can pass cookies.txt to handle site logins
+- **Web Series Download** - Access online sources unavailable to Sonarr
+- **Format Control** - Specify video format globally or per series
+- **Automatic Downloads** - New episodes downloaded as they become available
+- **Seamless Integration** - Direct import to Sonarr with media server updates
+- **Time Offset Support** - Handle prerelease series with custom timing
+- **Cookie Support** - Pass cookies.txt for authenticated site access
 
-## How do I use it
+## Quick Start Guide
 
-1. Find a series that is available online in the supported sites that YT-DLP can grab from.
-2. Add this to Sonarr and monitor the episodes that you want.
-3. Edit your config.yml accordingly so that this knows where your Sonarr is, which series you are after and where to grab it from.
-4. Be aware that this requires the TVDB to match exactly what the episodes titles are in the scan, generally this is ok but as its an openly editable site sometime there can be differences.
+1. **Find Your Series** - Locate a series on any [YT-DLP supported site](https://github.com/yt-dlp/yt-dlp/blob/master/supportedsites.md)
+2. **Add to Sonarr** - Add the series to Sonarr and monitor desired episodes
+3. **Configure** - Edit `config.yml` to specify Sonarr location, target series, and source URLs
+4. **TVDB Matching** - Ensure episode titles match TVDB exactly (usually automatic)
 
 ## Supported Architectures
 
-The architectures supported by this image are:
-
-| Architecture | Tag |
-| :----: | --- |
-| x86-64 | latest |
+| Architecture | Available Tags |
+|:------------:|:-------------:|
+| **x86-64** | `latest` |
 
 ## Version Tags
 
 | Tag | Description |
-| :----: | --- |
-| latest | Current release code |
+|:---:|:----------:|
+| `latest` | Current stable release |
 
-## Great how do I get started
+---
 
-Obviously its a docker image so you need docker, if you don't know what that is you need to look into that first.
+## Installation
 
-### docker
+> **Prerequisites**: Docker must be installed on your system. New to Docker? [Get started here](https://docs.docker.com/get-started/).
+
+### Docker CLI
 
 ```bash
 docker create \
@@ -56,7 +67,7 @@ docker create \
   dungfu/sonarr_youtubedl
 ```
 
-### docker-compose
+### Docker Compose
 
 ```yaml
 ---
@@ -74,27 +85,53 @@ services:
       - /path/to/logs:/logs
 ```
 
-### Docker volumes
+---
 
-| Parameter | Function |
-| :----: | --- |
-| `-v /config` | sonarr_youtubedl configs |
-| `-v /sonarr_root` | Root library location from Sonarr container |
-| `-v /logs` | log location |
+## Configuration
+
+### Volume Mapping
+
+| Volume | Purpose | Required |
+|:------:|:--------|:--------:|
+| `/config` | Configuration files | ✅ |
+| `/sonarr_root` | Sonarr library root | ✅ |
+| `/logs` | Application logs | ✅ |
 
 ### Environment Variables
 
-| Parameter | Function |
-| :----: | --- |
-| `USER_ID` | User ID to run the container as (default: 1000) |
-| `GROUP_ID` | Group ID to run the container as (default: 1000) |
+| Variable | Default | Description |
+|:--------:|:-------:|:------------|
+| `USER_ID` | `1000` | Container user ID |
+| `GROUP_ID` | `1000` | Container group ID |
 
-**Clarification on sonarr_root**
+### Understanding `sonarr_root`
 
-Sonarr root is the root folder where sonarr will place the files. So in sonarr you have your files moving to `/mnt/video/tv/Helluva Boss/` as an example, in sonarr you will see that it saves this series to `/tv/Helluva Boss/` meaning the sonarr root is `/mnt/video/` as this is the root folder sonarr is working from. In the case that the path to the root folders are different in the parent filesystem (like in TrueNAS), the best way to set this up is to have your volume be: `/parent/os/path/to/video:/sonarr_root/mnt/video`.
+> **Important**: The `sonarr_root` volume maps to Sonarr's root library directory.
 
-## Configuration file
+**Example Setup:**
+- If Sonarr saves to: `/mnt/video/tv/Helluva Boss/`
+- Sonarr shows path as: `/tv/Helluva Boss/`
+- Then `sonarr_root` = `/mnt/video/`
 
-On first run the docker will create a template file in the config folder. Example [config.yml.template](./app/config.yml.template)
+**For different filesystem paths** (e.g., TrueNAS):
+```bash
+-v /parent/os/path/to/video:/sonarr_root/mnt/video
+```
 
-Copy the `config.yml.template` to a new file called `config.yml` and edit accordingly.
+---
+
+## Configuration File
+
+On first run, a template configuration file will be created automatically.
+
+1. Locate the template: [`config.yml.template`](./app/config.yml.template)
+2. Copy to `config.yml` in your config directory
+3. Edit the configuration to match your setup
+
+<div align="center">
+
+---
+
+*Made with ❤️ for the Sonarr community*
+
+</div>
