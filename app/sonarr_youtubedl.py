@@ -402,7 +402,7 @@ class SonarrYTDL(object):
                                 'format': self.ytdl_format,
                                 'quiet': True,
                                 'merge-output-format': 'mp4',
-                                'outtmpl': '/sonarr_root{0}/Season {1}/{2} - S{1}E{3} - {4} WEBDL.%(ext)s'.format(
+                                'outtmpl': '/sonarr_root{0}/Season {1}/{2} - S{1:02d}E{3:02d} - {4} - WEB-DL-SonarrYTDL.%(ext)s'.format(
                                     ser['path'],
                                     eps['seasonNumber'],
                                     ser['title'],
