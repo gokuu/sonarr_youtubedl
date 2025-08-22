@@ -1,11 +1,12 @@
-# sonarr_youtubedl by [@whatdaybob](https://github.com/whatdaybob)
+# sonarr_youtubedl
 
-![Docker Build](https://img.shields.io/docker/cloud/automated/whatdaybob/sonarr_youtubedl?style=flat-square)
-![Docker Pulls](https://img.shields.io/docker/pulls/whatdaybob/sonarr_youtubedl?style=flat-square)
-![Docker Stars](https://img.shields.io/docker/stars/whatdaybob/sonarr_youtubedl?style=flat-square)
-[![Docker Hub](https://img.shields.io/badge/Open%20On-DockerHub-blue)](https://hub.docker.com/r/whatdaybob/sonarr_youtubedl)
+![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/fireph/sonarr_youtubedl/main.yaml?style=flat-square)
+![Docker Pulls](https://img.shields.io/docker/pulls/dungfu/sonarr_youtubedl?style=flat-square)
+![Docker Stars](https://img.shields.io/docker/stars/dungfu/sonarr_youtubedl?style=flat-square)
+[![Docker Hub](https://img.shields.io/badge/Open%20On-DockerHub-blue)](https://hub.docker.com/r/dungfu/sonarr_youtubedl)
+[![GitHub](https://img.shields.io/badge/GitHub-Repository-blue)](https://github.com/fireph/sonarr_youtubedl)
 
-[whatdaybob/sonarr_youtubedl](https://github.com/whatdaybob/Custom_Docker_Images/tree/master/sonarr_youtubedl) is a [Sonarr](https://sonarr.tv/) companion script to allow the automatic downloading of web series normally not available for Sonarr to search for. Using [YT-DLP](https://github.com/yt-dlp/yt-dlp) (a youtube-dl fork with added features) it allows you to download your webseries from the list of [supported sites](https://github.com/yt-dlp/yt-dlp/blob/master/supportedsites.md).
+sonarr_youtubedl is a [Sonarr](https://sonarr.tv/) companion script to allow the automatic downloading of web series normally not available for Sonarr to search for. Using [YT-DLP](https://github.com/yt-dlp/yt-dlp) (a youtube-dl fork with added features) it allows you to download your webseries from the list of [supported sites](https://github.com/yt-dlp/yt-dlp/blob/master/supportedsites.md).
 
 ## Features
 
@@ -18,7 +19,7 @@
 
 ## How do I use it
 
-Firstly you need a series that is available online in the supported sites that YouTube-DL can grab from.
+Firstly you need a series that is available online in the supported sites that YT-DLP can grab from.
 Secondly you need to add this to Sonarr and monitor the episodes that you want.
 Thirdly edit your config.yml accordingly so that this knows where your Sonarr is, which series you are after and where to grab it from.
 Lastly be aware that this requires the TVDB to match exactly what the episodes titles are in the scan, generally this is ok but as its an openly editable site sometime there can be differences.
@@ -48,11 +49,13 @@ Obviously its a docker image so you need docker, if you don't know what that is 
 ```bash
 docker create \
   --name=sonarr_youtubedl \
+  -e USER_ID=1000 \
+  -e GROUP_ID=1000 \
   -v /path/to/data:/config \
   -v /path/to/sonarrmedia:/sonarr_root \
   -v /path/to/logs:/logs \
   --restart unless-stopped \
-  whatdaybob/sonarr_youtubedl
+  dungfu/sonarr_youtubedl
 ```
 
 ### docker-compose
@@ -62,8 +65,11 @@ docker create \
 version: '3.4'
 services:
   sonarr_youtubedl:
-    image: whatdaybob/sonarr_youtubedl
+    image: dungfu/sonarr_youtubedl
     container_name: sonarr_youtubedl
+    environment:
+      - USER_ID=1000
+      - GROUP_ID=1000
     volumes:
       - /path/to/data:/config
       - /path/to/sonarrmedia:/sonarr_root
@@ -78,18 +84,19 @@ services:
 | `-v /sonarr_root` | Root library location from Sonarr container |
 | `-v /logs` | log location |
 
+### Environment Variables
+
+| Parameter | Function |
+| :----: | --- |
+| `USER_ID` | User ID to run the container as (default: 1000) |
+| `GROUP_ID` | Group ID to run the container as (default: 1000) |
+
 **Clarification on sonarr_root**
 
-A couple of people are not sure what is meant by the sonarr root. As this downloads directly to where you media is stored I mean the root folder where sonarr will place the files. So in sonarr you have your files moving to `/mnt/sda1/media/tv/Smarter Every Day/` as an example, in sonarr you will see that it saves this series to `/tv/Smarter Every Day/` meaning the sonarr root is `/mnt/sda1/media/` as this is the root folder sonarr is working from.
+Sonarr root is the root folder where sonarr will place the files. So in sonarr you have your files moving to `/mnt/video/tv/Helluva Boss/` as an example, in sonarr you will see that it saves this series to `/tv/Helluva Boss/` meaning the sonarr root is `/mnt/video/` as this is the root folder sonarr is working from. In the case that the path to the root folders are different in the parent filesystem (like in TrueNAS), the best way to set this up is to have your volume be: `/parent/os/path/to/video:/sonarr_root/mnt/video`.
 
 ## Configuration file
 
 On first run the docker will create a template file in the config folder. Example [config.yml.template](./app/config.yml.template)
 
 Copy the `config.yml.template` to a new file called `config.yml` and edit accordingly.
-
-If I helped in anyway and you would like to help me, consider donating a lovely beverage with the below.
-
-<!-- markdownlint-disable MD033 -->
-<a href="https://www.buymeacoffee.com/whatdaybob" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/lato-black.png" alt="Buy Me A Coffee" style="height: 51px !important;width: 217px !important;" ></a>
-<!-- markdownlint-enable MD033 -->
