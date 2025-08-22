@@ -1,22 +1,17 @@
-FROM python:3.9-buster
-LABEL maintainer="Martin Jones <whatdaybob@outlook.com>"
+FROM python:3.12-slim
 
-# Update and install ffmpeg
+# Update and install ffmpeg and gosu
 RUN apt-get update && \
-    apt-get install -y ffmpeg 
+    apt-get install -y ffmpeg gosu && \
+    rm -rf /var/lib/apt/lists/* 
 
 # Copy and install requirements
 COPY requirements.txt requirements.txt
 RUN pip3 install -r requirements.txt
 
-# create abc user so root isn't used
-RUN \
-	groupmod -g 1000 users && \
-	useradd -u 911 -U -d /config -s /bin/false abc && \
-	usermod -G users abc && \
 # create some files / folders
-	mkdir -p /config /app /sonarr_root /logs && \
-	touch /var/lock/sonarr_youtube.lock
+RUN mkdir -p /config /app /sonarr_root /logs && \
+    touch /var/lock/sonarr_youtube.lock
 
 # add volumes
 VOLUME /config
@@ -26,14 +21,19 @@ VOLUME /logs
 # add local files
 COPY app/ /app
 
+# Copy entrypoint script
+COPY entrypoint.sh /entrypoint.sh
+
 # update file permissions
 RUN \
     chmod a+x \
     /app/sonarr_youtubedl.py \ 
     /app/utils.py \
-    /app/config.yml.template
+    /app/config.yml.template \
+    /entrypoint.sh
 
 # ENV setup
 ENV CONFIGPATH /config/config.yml
 
+ENTRYPOINT ["/entrypoint.sh"]
 CMD [ "python", "-u", "/app/sonarr_youtubedl.py" ]
