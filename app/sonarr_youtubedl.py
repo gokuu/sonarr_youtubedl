@@ -4,7 +4,7 @@ import yt_dlp
 import os
 import sys
 import re
-from utils import upperescape, checkconfig, offsethandler, YoutubeDLLogger, ytdl_hooks, ytdl_hooks_debug, setup_logging  # NOQA
+from utils import sanitize_str, upperescape, checkconfig, offsethandler, YoutubeDLLogger, ytdl_hooks, ytdl_hooks_debug, setup_logging  # NOQA
 from datetime import datetime
 import schedule
 import time
@@ -424,9 +424,9 @@ class SonarrYTDL(object):
                                 'outtmpl': '/sonarr_root{0}/Season {1}/{2} - S{1:02d}E{3:02d} - {4} - WEB-DL-SonarrYTDL.%(ext)s'.format(
                                     ser['path'],
                                     eps['seasonNumber'],
-                                    ser['title'],
+                                    sanitize_str(ser['title']),
                                     eps['episodeNumber'],
-                                    eps['title']
+                                    sanitize_str(eps['title'])
                                 ),
                                 'progress_hooks': [ytdl_hooks],
                                 'noplaylist': True,

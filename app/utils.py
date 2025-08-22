@@ -10,6 +10,17 @@ from logging.handlers import RotatingFileHandler
 CONFIGFILE = os.environ['CONFIGPATH']
 # CONFIGPATH = CONFIGFILE.replace('config.yml', '')
 
+def sanitize_str(string):
+    """Sanitize string for use in filenames by removing/replacing invalid characters.
+    - ``string``: string to sanitize
+    returns:
+        ``string``: sanitized string safe for filenames
+    """
+    # Replace invalid filename characters with dash
+    string = re.sub(r'[<>:"/\\|?*]', '-', string)
+    # Replace multiple consecutive dashes with single dash
+    string = re.sub(r'-+', '-', string)
+    return string
 
 def upperescape(string):
     """Uppercase and Escape string. Used to help with YT-DL regex match.
