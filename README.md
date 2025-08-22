@@ -1,5 +1,7 @@
 <div align="center">
 
+<img src="logo.png" alt="sonarr_youtubedl Logo" width="120" height="120">
+
 # sonarr_youtubedl
 
 *Automatically download web series for Sonarr using YT-DLP*
