@@ -19,10 +19,10 @@ sonarr_youtubedl is a [Sonarr](https://sonarr.tv/) companion script to allow the
 
 ## How do I use it
 
-Firstly you need a series that is available online in the supported sites that YT-DLP can grab from.
-Secondly you need to add this to Sonarr and monitor the episodes that you want.
-Thirdly edit your config.yml accordingly so that this knows where your Sonarr is, which series you are after and where to grab it from.
-Lastly be aware that this requires the TVDB to match exactly what the episodes titles are in the scan, generally this is ok but as its an openly editable site sometime there can be differences.
+1. Find a series that is available online in the supported sites that YT-DLP can grab from.
+2. Add this to Sonarr and monitor the episodes that you want.
+3. Edit your config.yml accordingly so that this knows where your Sonarr is, which series you are after and where to grab it from.
+4. Be aware that this requires the TVDB to match exactly what the episodes titles are in the scan, generally this is ok but as its an openly editable site sometime there can be differences.
 
 ## Supported Architectures
 
@@ -31,14 +31,12 @@ The architectures supported by this image are:
 | Architecture | Tag |
 | :----: | --- |
 | x86-64 | latest |
-| x86-64 | dev |
 
 ## Version Tags
 
 | Tag | Description |
 | :----: | --- |
 | latest | Current release code |
-| dev | Pre-release code for testing issues |
 
 ## Great how do I get started
 
