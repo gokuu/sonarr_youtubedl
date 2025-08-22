@@ -92,40 +92,56 @@ class SonarrYTDL(object):
         """Returns all episodes for the given series"""
         logger.debug('Begin call Sonarr for all episodes for series_id: {}'.format(series_id))
         args = {'seriesId': series_id}
-        res = self.request_get("{}/{}/episode".format(
-            self.base_url, 
-            self.sonarr_api_version
-            ), args
-        )
-        return res.json()
+        try:
+            res = self.request_get("{}/{}/episode".format(
+                self.base_url, 
+                self.sonarr_api_version
+                ), args
+            )
+            return res.json()
+        except Exception as e:
+            logger.error('Failed to get episodes for series_id {}: {}'.format(series_id, e))
+            return []
 
     def get_episode_files_by_series_id(self, series_id):
         """Returns all episode files for the given series"""
-        res = self.request_get("{}/{}/episodefile?seriesId={}".format(
-            self.base_url, 
-            self.sonarr_api_version,
-            series_id
-        ))
-        return res.json()
+        try:
+            res = self.request_get("{}/{}/episodefile?seriesId={}".format(
+                self.base_url, 
+                self.sonarr_api_version,
+                series_id
+            ))
+            return res.json()
+        except Exception as e:
+            logger.error('Failed to get episode files for series_id {}: {}'.format(series_id, e))
+            return []
 
     def get_series(self):
         """Return all series in your collection"""
         logger.debug('Begin call Sonarr for all available series')
-        res = self.request_get("{}/{}/series".format(
-            self.base_url, 
-            self.sonarr_api_version
-        ))
-        return res.json()
+        try:
+            res = self.request_get("{}/{}/series".format(
+                self.base_url, 
+                self.sonarr_api_version
+            ))
+            return res.json()
+        except Exception as e:
+            logger.error('Failed to get series from Sonarr: {}'.format(e))
+            return []
 
     def get_series_by_series_id(self, series_id):
         """Return the series with the matching ID or 404 if no matching series is found"""
         logger.debug('Begin call Sonarr for specific series series_id: {}'.format(series_id))
-        res = self.request_get("{}/{}/series/{}".format(
-            self.base_url,
-            self.sonarr_api_version,
-            series_id
-        ))
-        return res.json()
+        try:
+            res = self.request_get("{}/{}/series/{}".format(
+                self.base_url,
+                self.sonarr_api_version,
+                series_id
+            ))
+            return res.json()
+        except Exception as e:
+            logger.error('Failed to get series with series_id {}: {}'.format(series_id, e))
+            return None
 
     def request_get(self, url, params=None):
         """Wrapper on the requests.get"""
@@ -140,8 +156,24 @@ class SonarrYTDL(object):
             url,
             urllib.parse.urlencode(args)
         )
-        res = requests.get(url)
-        return res
+        try:
+            res = requests.get(url, timeout=30)
+            res.raise_for_status()  # Raise an exception for bad status codes
+            return res
+        except requests.exceptions.ConnectionError as e:
+            logger.error('Connection error when calling Sonarr API: {}'.format(e))
+            raise
+        except requests.exceptions.Timeout as e:
+            logger.error('Timeout error when calling Sonarr API: {}'.format(e))
+            raise
+        except requests.exceptions.HTTPError as e:
+            logger.error('HTTP error when calling Sonarr API: {}'.format(e))
+            logger.error('Response status code: {}'.format(res.status_code))
+            logger.error('Response content: {}'.format(res.text))
+            raise
+        except requests.exceptions.RequestException as e:
+            logger.error('Request error when calling Sonarr API: {}'.format(e))
+            raise
 
     def request_put(self, url, params=None, jsondata=None):
         logger.debug('Begin PUT with url: {}'.format(url))
@@ -170,12 +202,16 @@ class SonarrYTDL(object):
             "name": "RescanSeries",
             "seriesId": str(series_id)
         }
-        res = self.request_put(
-            "{}/{}/command".format(self.base_url, self.sonarr_api_version),
-            None,
-            data
-        )
-        return res.json()
+        try:
+            res = self.request_put(
+                "{}/{}/command".format(self.base_url, self.sonarr_api_version),
+                None,
+                data
+            )
+            return res.json()
+        except Exception as e:
+            logger.error('Failed to rescan series with series_id {}: {}'.format(series_id, e))
+            return None
 
     def filterseries(self):
         """Return all series in Sonarr that are to be downloaded by youtube-dl"""
