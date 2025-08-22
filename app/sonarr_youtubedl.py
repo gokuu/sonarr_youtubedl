@@ -219,7 +219,7 @@ class SonarrYTDL(object):
         logger.debug('Begin call Sonarr to rescan for series_id: {}'.format(series_id))
         data = {
             "name": "RescanSeries",
-            "seriesId": str(series_id)
+            "seriesId": int(series_id)
         }
         try:
             res = self.request_put(
