@@ -421,10 +421,11 @@ class SonarrYTDL(object):
                                 'format': self.ytdl_format,
                                 'quiet': True,
                                 'merge-output-format': 'mkv',
-                                'outtmpl': '/sonarr_root{0}/Season {1}/{2} - S{1:02d}E{3:02d} - {4} - WEB-DL-SonarrYTDL.%(ext)s'.format(
+                                'outtmpl': '/sonarr_root{0}/{1}/{2} - S{3:02d}E{4:02d} - {5} - WEB-DL-SonarrYTDL.%(ext)s'.format(
                                     ser['path'],
-                                    eps['seasonNumber'],
+                                    'Specials' if eps['seasonNumber'] == 0 else f"Season {eps['seasonNumber']}",
                                     sanitize_str(ser['title']),
+                                    eps['seasonNumber'],
                                     eps['episodeNumber'],
                                     sanitize_str(eps['title'])
                                 ),
