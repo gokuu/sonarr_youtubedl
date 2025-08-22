@@ -420,8 +420,8 @@ class SonarrYTDL(object):
                             ytdl_format_options = {
                                 'format': self.ytdl_format,
                                 'quiet': True,
-                                'merge-output-format': 'mp4',
-                                'outtmpl': '/sonarr_root{0}/Season {1}/{2} - S{1:02d}E{3:02d} - {4} - WEB-DL-SonarrYTDL.%(ext)s'.format(
+                                'merge-output-format': 'mkv',
+                                'outtmpl': '/sonarr_root{0}/Season {1}/{2} - S{1:02d}E{3:02d} - {4} - WEB-DL-SonarrYTDL.mkv'.format(
                                     ser['path'],
                                     eps['seasonNumber'],
                                     ser['title'],
@@ -430,13 +430,17 @@ class SonarrYTDL(object):
                                 ),
                                 'progress_hooks': [ytdl_hooks],
                                 'noplaylist': True,
+                                'postprocessors': [{
+                                    'key': 'FFmpegVideoRemuxer',
+                                    'preferedformat': 'mkv',
+                                }],
                             }
                             ytdl_format_options = self.appendcookie(ytdl_format_options, cookies)
                             if 'format' in ser:
                                 ytdl_format_options = self.customformat(ytdl_format_options, ser['format'])
                             if 'subtitles' in ser:
                                 if ser['subtitles']:
-                                    postprocessors = []
+                                    postprocessors = ytdl_format_options['postprocessors']
                                     postprocessors.append({
                                         'key': 'FFmpegSubtitlesConvertor',
                                         'format': 'srt',
