@@ -40,7 +40,7 @@ def upperescape(string):
     # Make it look for and as whole or ampersands
     string = string.replace('\\ AND\\ ','\\ (AND|&)\\ ')
     # Make punctuation optional for human error
-    string = string.replace("'","([']?)") # optional apostrophe
+    string = string.replace("'","(['’]?)") # optional apostrophe
     string = string.replace(",","([,]?)") # optional comma
     string = string.replace("!","([!]?)") # optional question mark
     string = string.replace("\\.","([\\.]?)") # optional period
