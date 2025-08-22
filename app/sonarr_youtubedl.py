@@ -430,6 +430,7 @@ class SonarrYTDL(object):
                                 ),
                                 'progress_hooks': [ytdl_hooks],
                                 'noplaylist': True,
+                                'retry_sleep': 5,
                                 'postprocessors': [{
                                     'key': 'FFmpegVideoRemuxer',
                                     'preferedformat': 'mkv',
