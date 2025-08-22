@@ -1,13 +1,11 @@
-FROM python:3.12-slim
+FROM python:alpine
 
-# Update and install ffmpeg and gosu
-RUN apt-get update && \
-    apt-get install -y ffmpeg gosu && \
-    rm -rf /var/lib/apt/lists/* 
+# Install ffmpeg and su-exec
+RUN apk add --no-cache ffmpeg su-exec
 
-# Copy and install requirements
+# Copy and install requirements with optimizations
 COPY requirements.txt requirements.txt
-RUN pip3 install -r requirements.txt
+RUN pip3 install --no-cache-dir -r requirements.txt
 
 # create some files / folders
 RUN mkdir -p /config /app /sonarr_root /logs && \
