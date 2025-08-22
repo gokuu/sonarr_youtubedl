@@ -1,4 +1,4 @@
-FROM python:alpine
+FROM python:3-alpine
 
 # Install ffmpeg
 RUN apk add --no-cache ffmpeg

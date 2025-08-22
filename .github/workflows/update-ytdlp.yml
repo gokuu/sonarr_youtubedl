@@ -1,0 +1,65 @@
+name: Update yt-dlp
+
+on:
+  schedule:
+    # Run daily at 2 AM UTC
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+
+jobs:
+  update-ytdlp:
+    runs-on: ubuntu-latest
+    steps:
+      # https://github.com/actions/checkout
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      # https://github.com/actions/setup-python
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Get latest yt-dlp version
+        id: ytdlp-version
+        run: |
+          LATEST_VERSION=$(pip index versions yt-dlp | grep "Available versions:" | head -1 | cut -d' ' -f3 | tr -d ',')
+          echo "latest=$LATEST_VERSION" >> $GITHUB_OUTPUT
+          echo "Latest yt-dlp version: $LATEST_VERSION"
+
+      - name: Get current yt-dlp version
+        id: current-version
+        run: |
+          CURRENT_VERSION=$(grep "yt-dlp==" requirements.txt | cut -d'=' -f3)
+          echo "current=$CURRENT_VERSION" >> $GITHUB_OUTPUT
+          echo "Current yt-dlp version: $CURRENT_VERSION"
+
+      - name: Update requirements.txt
+        if: steps.ytdlp-version.outputs.latest != steps.current-version.outputs.current
+        run: |
+          sed -i "s/yt-dlp==${{ steps.current-version.outputs.current }}/yt-dlp==${{ steps.ytdlp-version.outputs.latest }}/" requirements.txt
+          echo "Updated yt-dlp from ${{ steps.current-version.outputs.current }} to ${{ steps.ytdlp-version.outputs.latest }}"
+
+      - name: Commit and push changes
+        if: steps.ytdlp-version.outputs.latest != steps.current-version.outputs.current
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add requirements.txt
+          git commit -m "Update yt-dlp to ${{ steps.ytdlp-version.outputs.latest }}"
+          git push
+
+      # https://github.com/actions/github-script
+      - name: Trigger Docker build
+        if: steps.ytdlp-version.outputs.latest != steps.current-version.outputs.current
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'main.yaml',
+              ref: 'main'
+            })
