@@ -176,24 +176,43 @@ class SonarrYTDL(object):
             raise
 
     def request_put(self, url, params=None, jsondata=None):
-        logger.debug('Begin PUT with url: {}'.format(url))
-        """Wrapper on the requests.put"""
+        """Wrapper on the requests.post"""
+        logger.debug('Begin POST with url: {}'.format(url))
         headers = {
             'Content-Type': 'application/json',
         }
-        args = (
-            ('apikey', self.api_key),
-        )
+        args = {
+            'apikey': self.api_key
+        }
         if params is not None:
+            logger.debug('Begin POST with params: {}'.format(params))
             args.update(params)
-            logger.debug('Begin PUT with params: {}'.format(params))
-        res = requests.post(
-            url,
-            headers=headers,
-            params=args,
-            json=jsondata
-        )
-        return res
+        
+        try:
+            res = requests.post(
+                url,
+                headers=headers,
+                params=args,
+                json=jsondata,
+                timeout=30
+            )
+            res.raise_for_status()  # Raise an exception for bad status codes
+            logger.debug('POST request successful, status code: {}'.format(res.status_code))
+            return res
+        except requests.exceptions.ConnectionError as e:
+            logger.error('Connection error when calling Sonarr API: {}'.format(e))
+            raise
+        except requests.exceptions.Timeout as e:
+            logger.error('Timeout error when calling Sonarr API: {}'.format(e))
+            raise
+        except requests.exceptions.HTTPError as e:
+            logger.error('HTTP error when calling Sonarr API: {}'.format(e))
+            logger.error('Response status code: {}'.format(res.status_code))
+            logger.error('Response content: {}'.format(res.text))
+            raise
+        except requests.exceptions.RequestException as e:
+            logger.error('Request error when calling Sonarr API: {}'.format(e))
+            raise
 
     def rescanseries(self, series_id):
         """Refresh series information from trakt and rescan disk"""
