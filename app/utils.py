@@ -8,7 +8,6 @@ from logging.handlers import RotatingFileHandler
 import yaml
 
 CONFIGFILE = os.environ["CONFIGPATH"]
-# CONFIGPATH = CONFIGFILE.replace('config.yml', '')
 
 
 def sanitize_str(string):
@@ -152,7 +151,7 @@ def ytdl_hooks(d):
 
 def setup_logging(lf_enabled=True, lc_enabled=True, debugging=False):
     log_level = logging.INFO
-    log_level = logging.DEBUG if debugging == True else log_level
+    log_level = logging.DEBUG if debugging else log_level
     logger = logging.getLogger("sonarr_youtubedl")
     logger.setLevel(log_level)
     log_format = logging.Formatter(
