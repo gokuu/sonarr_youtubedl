@@ -53,6 +53,7 @@
 
 ## Installation
 
+> [!NOTE]
 > **Prerequisites**: Docker must be installed on your system. New to Docker? [Get started here](https://docs.docker.com/get-started/).
 
 ### Docker CLI
@@ -108,7 +109,8 @@ services:
 
 ### Understanding `sonarr_root`
 
-> **Important**: The `sonarr_root` volume maps to Sonarr's root library directory.
+> [!IMPORTANT]
+> The `sonarr_root` volume maps to Sonarr's root library directory.
 
 **Example Setup:**
 - If Sonarr saves to: `/mnt/video/tv/Helluva Boss/`
