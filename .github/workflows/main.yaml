@@ -56,7 +56,7 @@ jobs:
           context: .
           push: true
           file: ./Dockerfile
-          platforms: linux/amd64
+          platforms: linux/amd64,linux/arm/v7,linux/arm64,linux/386
           tags: dungfu/sonarr_youtubedl:${{ steps.tag.outputs.tag }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
