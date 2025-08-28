@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="logo.png" alt="sonarr_youtubedl Logo" width="180" height="180">
+<img src="https://raw.githubusercontent.com/fireph/sonarr_youtubedl/refs/heads/main/logo.png" alt="sonarr_youtubedl Logo" width="180" height="180">
 
 # sonarr_youtubedl
 
