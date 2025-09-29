@@ -1,7 +1,7 @@
 FROM python:3-alpine as builder
 
 # Install build dependencies
-RUN apk add --no-cache gcc musl-dev zlib-dev
+RUN apk add --no-cache gcc musl-dev
 
 # Copy requirements and install dependencies including PyInstaller
 COPY requirements.txt .
