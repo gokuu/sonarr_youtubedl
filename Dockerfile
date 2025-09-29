@@ -1,42 +1,32 @@
-FROM python:3-alpine as builder
+FROM python:3-alpine
 
-# Install build dependencies
-RUN apk add --no-cache binutils
-
-# Copy requirements and install dependencies including PyInstaller
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt pyinstaller
-
-# Copy source code
-COPY app/ /app
-
-# Compile the application
-WORKDIR /app
-RUN pyinstaller --onefile --name sonarr_youtubedl sonarr_youtubedl.py
-
-# Runtime stage - minimal image with just the executable
-FROM alpine:latest
-
-# Install runtime dependencies
+# Install ffmpeg
 RUN apk add --no-cache ffmpeg
 
-# Create necessary directories and files
-RUN mkdir -p /config /sonarr_root /logs && \
+# Copy and install requirements with optimizations
+COPY requirements.txt requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
+
+# create some files / folders
+RUN mkdir -p /config /app /sonarr_root /logs && \
     touch /var/lock/sonarr_youtube.lock
 
-# Copy the compiled executable from build stage
-COPY --from=builder /app/dist/sonarr_youtubedl /usr/local/bin/sonarr_youtubedl
-COPY --from=builder /app/config.yml.template /app/config.yml.template
-
-# Set permissions
-RUN chmod +x /usr/local/bin/sonarr_youtubedl /app/config.yml.template
-
-# Add volumes
+# add volumes
 VOLUME /config
 VOLUME /sonarr_root
 VOLUME /logs
 
-# ENV setup
-ENV CONFIGPATH=/config/config.yml
+# add local files
+COPY app/ /app
 
-CMD ["/usr/local/bin/sonarr_youtubedl"]
+# update file permissions
+RUN \
+    chmod a+x \
+    /app/sonarr_youtubedl.py \ 
+    /app/utils.py \
+    /app/config.yml.template
+
+# ENV setup
+ENV CONFIGPATH /config/config.yml
+
+CMD [ "python", "-u", "/app/sonarr_youtubedl.py" ]
