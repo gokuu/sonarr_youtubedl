@@ -27,6 +27,6 @@ RUN \
     /app/config.yml.template
 
 # ENV setup
-ENV CONFIGPATH /config/config.yml
+ENV CONFIGPATH=/config/config.yml
 
 CMD [ "python", "-u", "/app/sonarr_youtubedl.py" ]

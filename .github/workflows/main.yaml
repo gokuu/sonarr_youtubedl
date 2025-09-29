@@ -37,7 +37,7 @@ jobs:
           else
             DOCKER_TAG="${GITHUB_REF:11}"
           fi
-          echo ::set-output name=tag::${DOCKER_TAG}
+          echo "tag=${DOCKER_TAG}" >> $GITHUB_OUTPUT
 
       # https://github.com/docker/setup-qemu-action
       - name: Set up QEMU
