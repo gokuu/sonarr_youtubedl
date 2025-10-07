@@ -179,3 +179,37 @@ def setup_logging(lf_enabled=True, lc_enabled=True, debugging=False):
         logger.addHandler(loggerconsole)
 
     return logger
+
+def remove_spaces_in_braces(text):
+    # Pattern matches { followed by any characters including spaces, then }
+    # The (?<=...) is a positive lookbehind, (?=...) is a positive lookahead
+    return re.sub(r'(?<=\{)[^}]*', lambda m: m.group().replace(' ', ''), text)
+
+def convert_sonarr_to_python_format(template):
+    """
+    Convert Sonarr naming format to Python string interpolation.
+    Handles various Sonarr formatting patterns.
+    """
+    def convert_format(match):
+        field_name = match.group(1)
+        format_spec = match.group(2) if match.group(2) else ""
+
+        if not format_spec:
+            return f"{{{field_name}}}"
+
+        # Handle different Sonarr format patterns
+        if format_spec.startswith('0'):
+            # {season:00} -> {season:02d}
+            width = len(format_spec)
+            return f"{{{field_name}:0{width}d}}"
+        elif format_spec.startswith('00'):
+            # {season:000} -> {season:03d}
+            width = len(format_spec)
+            return f"{{{field_name}:0{width}d}}"
+        else:
+            # Keep other formats as-is
+            return f"{{{field_name}:{format_spec}}}"
+
+    # Pattern to match {field:format} or {field}
+    pattern = r'\{([^:}]+)(?::([^}]+))?\}'
+    return remove_spaces_in_braces(re.sub(pattern, convert_format, template))

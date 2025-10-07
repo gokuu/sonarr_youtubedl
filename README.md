@@ -1,18 +1,18 @@
 <div align="center">
 
-<img src="https://raw.githubusercontent.com/fireph/sonarr_youtubedl/refs/heads/main/logo.png" alt="sonarr_youtubedl Logo" width="180" height="180">
+<img src="https://raw.githubusercontent.com/gokuu/sonarr_youtubedl/refs/heads/main/logo.png" alt="sonarr_youtubedl Logo" width="180" height="180">
 
 # sonarr_youtubedl
 
-*Automatically download web series for Sonarr using YT-DLP*
+_Automatically download web series for Sonarr using YT-DLP_
 
-![Docker Pulls](https://img.shields.io/docker/pulls/dungfu/sonarr_youtubedl?style=flat-square)
-![Docker Stars](https://img.shields.io/docker/stars/dungfu/sonarr_youtubedl?style=flat-square)
-![Docker Image Size](https://img.shields.io/docker/image-size/dungfu/sonarr_youtubedl/latest)
-![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/fireph/sonarr_youtubedl/main.yaml?style=flat-square)
+![Docker Pulls](https://img.shields.io/docker/pulls/pedromr/sonarr_youtubedl?style=flat-square)
+![Docker Stars](https://img.shields.io/docker/stars/pedromr/sonarr_youtubedl?style=flat-square)
+![Docker Image Size](https://img.shields.io/docker/image-size/pedromr/sonarr_youtubedl/latest)
+![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/gokuu/sonarr_youtubedl/main.yaml?style=flat-square)
 
-[![Docker Hub](https://img.shields.io/badge/Open%20On-DockerHub-blue?style=for-the-badge&logo=docker)](https://hub.docker.com/r/dungfu/sonarr_youtubedl)
-[![GitHub](https://img.shields.io/badge/GitHub-Repository-blue?style=for-the-badge&logo=github)](https://github.com/fireph/sonarr_youtubedl)
+[![Docker Hub](https://img.shields.io/badge/Open%20On-DockerHub-blue?style=for-the-badge&logo=docker)](https://hub.docker.com/r/pedromr/sonarr_youtubedl)
+[![GitHub](https://img.shields.io/badge/GitHub-Repository-blue?style=for-the-badge&logo=github)](https://github.com/gokuu/sonarr_youtubedl)
 
 </div>
 
@@ -41,24 +41,23 @@
 ## Supported Architectures
 
 | Architecture | Available Tags |
-|:------------:|:-------------:|
-| **x86-64** | `latest` |
-| **ARM v7** | `latest` |
-| **ARM64** | `latest` |
-| **i386** | `latest` |
+| :----------: | :------------: |
+|  **x86-64**  |    `latest`    |
+|  **ARM v7**  |    `latest`    |
+|  **ARM64**   |    `latest`    |
+|   **i386**   |    `latest`    |
 
 ## Version Tags
 
-| Tag | Description |
-|:---:|:----------:|
+|   Tag    |      Description       |
+| :------: | :--------------------: |
 | `latest` | Current stable release |
 
 ---
 
 ## Installation
 
-> [!NOTE]
-> **Prerequisites**: Docker must be installed on your system. New to Docker? [Get started here](https://docs.docker.com/get-started/).
+> [!NOTE] > **Prerequisites**: Docker must be installed on your system. New to Docker? [Get started here](https://docs.docker.com/get-started/).
 
 ### Docker CLI
 
@@ -71,17 +70,17 @@ docker create \
   -v /path/to/sonarrmedia:/sonarr_root \
   -v /path/to/logs:/logs \
   --restart unless-stopped \
-  dungfu/sonarr_youtubedl
+  pedromr/sonarr_youtubedl
 ```
 
 ### Docker Compose
 
 ```yaml
 ---
-version: '3.4'
+version: "3.4"
 services:
   sonarr_youtubedl:
-    image: dungfu/sonarr_youtubedl
+    image: pedromr/sonarr_youtubedl
     container_name: sonarr_youtubedl
     environment:
       - USER_ID=1000
@@ -98,18 +97,18 @@ services:
 
 ### Volume Mapping
 
-| Volume | Purpose | Required |
-|:------:|:--------|:--------:|
-| `/config` | Configuration files | ✅ |
-| `/sonarr_root` | Sonarr library root | ✅ |
-| `/logs` | Application logs | ✅ |
+|     Volume     | Purpose             | Required |
+| :------------: | :------------------ | :------: |
+|   `/config`    | Configuration files |    ✅    |
+| `/sonarr_root` | Sonarr library root |    ✅    |
+|    `/logs`     | Application logs    |    ✅    |
 
 ### Environment Variables
 
-| Variable | Default | Description |
-|:--------:|:-------:|:------------|
-| `USER_ID` | `1000` | Container user ID |
-| `GROUP_ID` | `1000` | Container group ID |
+|  Variable  | Default | Description        |
+| :--------: | :-----: | :----------------- |
+| `USER_ID`  | `1000`  | Container user ID  |
+| `GROUP_ID` | `1000`  | Container group ID |
 
 ### Understanding `sonarr_root`
 
@@ -117,11 +116,13 @@ services:
 > The `sonarr_root` volume maps to Sonarr's root library directory.
 
 **Example Setup:**
+
 - If Sonarr saves to: `/mnt/video/tv/Helluva Boss/`
 - Sonarr shows path as: `/tv/Helluva Boss/`
 - Then `sonarr_root` = `/mnt/video/`
 
 **For different filesystem paths** (e.g., TrueNAS):
+
 ```bash
 -v /parent/os/path/to/video:/sonarr_root/mnt/video
 ```
@@ -140,6 +141,6 @@ On first run, a template configuration file will be created automatically.
 
 ---
 
-*Made with ❤️ for the Sonarr community*
+_Made with ❤️ for the Sonarr community_
 
 </div>

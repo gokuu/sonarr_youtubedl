@@ -15,7 +15,6 @@ jobs:
       run:
         shell: bash
     steps:
-
       # https://github.com/marketplace/actions/checkout
       - name: Checkout
         uses: actions/checkout@v5
@@ -57,7 +56,7 @@ jobs:
           push: true
           file: ./Dockerfile
           platforms: linux/amd64,linux/arm64,linux/386,linux/arm/v7,linux/arm/v6
-          tags: dungfu/sonarr_youtubedl:${{ steps.tag.outputs.tag }}
+          tags: pedromr/sonarr_youtubedl:${{ steps.tag.outputs.tag }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
@@ -68,5 +67,5 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-          repository: dungfu/sonarr_youtubedl
+          repository: pedromr/sonarr_youtubedl
           readme-filepath: ./README.md

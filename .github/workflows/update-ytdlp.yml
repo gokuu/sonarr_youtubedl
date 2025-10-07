@@ -3,7 +3,7 @@ name: Update yt-dlp
 on:
   schedule:
     # Run daily at 2 AM UTC
-    - cron: '0 2 * * *'
+    - cron: "0 2 * * *"
   workflow_dispatch:
 
 jobs:
@@ -20,7 +20,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.x'
+          python-version: "3.x"
 
       - name: Get latest yt-dlp version
         id: ytdlp-version
@@ -42,12 +42,18 @@ jobs:
           sed -i "s/yt-dlp==${{ steps.current-version.outputs.current }}/yt-dlp==${{ steps.ytdlp-version.outputs.latest }}/" requirements.txt
           echo "Updated yt-dlp from ${{ steps.current-version.outputs.current }} to ${{ steps.ytdlp-version.outputs.latest }}"
 
+      - name: Update pyproject.toml
+        if: steps.ytdlp-version.outputs.latest != steps.current-version.outputs.current
+        run: |
+          sed -i "s/yt-dlp (==${{ steps.current-version.outputs.current }})/yt-dlp (==${{ steps.ytdlp-version.outputs.latest }})/" pyproject.toml
+          echo "Updated yt-dlp from ${{ steps.current-version.outputs.current }} to ${{ steps.ytdlp-version.outputs.latest }}"
+
       - name: Commit and push changes
         if: steps.ytdlp-version.outputs.latest != steps.current-version.outputs.current
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git add requirements.txt
+          git add requirements.txt pyproject.toml
           git commit -m "Update yt-dlp to ${{ steps.ytdlp-version.outputs.latest }}"
           git push
 
