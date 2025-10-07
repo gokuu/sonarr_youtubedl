@@ -13,6 +13,7 @@ import yt_dlp
 from utils import (
     YoutubeDLLogger,
     checkconfig,
+    convert_sonarr_to_python_format,
     offsethandler,
     sanitize_str,
     setup_logging,
@@ -88,11 +89,31 @@ class SonarrYTDL(object):
         except Exception:
             sys.exit("Error with ytdl config.yml values.")
 
+        # Naming Configuration from Sonarr
+        naming_configuration = self.get_naming_configuration()
+
+        if naming_configuration is not None:
+            self.naming_configuration = naming_configuration
+        else:
+            self.naming_configuration = None
+
         # YTDL Setup
         try:
             self.series = cfg["series"]
         except Exception:
             sys.exit("Error with series config.yml values.")
+
+    def get_naming_configuration(self):
+        """Returns the naming configuration for the given series"""
+        logger.debug("Begin call Sonarr for naming configuration")
+        try:
+            res = self.request_get(
+                "{}/{}/config/naming".format(self.base_url, self.sonarr_api_version)
+            )
+            return res.json()
+        except Exception as e:
+            logger.error("Failed to get naming configuration: {}".format(e))
+            return None
 
     def get_episodes_by_series_id(self, series_id):
         """Returns all episodes for the given series"""
@@ -398,6 +419,36 @@ class SonarrYTDL(object):
             else:
                 return True, video_url
 
+    def get_episode_filename(self, series, episode):
+        logger.debug("Getting episode filename")
+
+        if self.naming_configuration is not None:
+            template = "/sonarr_root{path}/{seasonFolderFormat}/{standardEpisodeFormat}".format(
+              path = series["path"],
+              seasonFolderFormat = self.naming_configuration["seasonFolderFormat"],
+              standardEpisodeFormat = self.naming_configuration["standardEpisodeFormat"],
+            )
+            logger.debug(f"Converting Sonarr template: {template}")
+            template = convert_sonarr_to_python_format(template)
+            logger.debug(f"Using python template: {template}")
+
+            # {Series Title} - s{season:00}e{episode:00} - {Episode Title}
+            return template.format(
+                SeriesTitle = sanitize_str(series["title"]),
+                season = episode["seasonNumber"],
+                episode = episode["episodeNumber"],
+                EpisodeTitle = sanitize_str(episode["title"]),
+            )
+        else:
+            return "/sonarr_root{0}/{1}/{2} - S{3:02d}E{4:02d} - {5} - WEB-DL-SonarrYTDL.%(ext)s".format(
+                series["path"],
+                "Specials" if episode["seasonNumber"] == 0 else f"Season {episode['seasonNumber']}",
+                sanitize_str(series["title"]),
+                episode["seasonNumber"],
+                episode["episodeNumber"],
+                sanitize_str(episode["title"]),
+            )
+
     def download(self, series, episodes):
         if len(series) != 0:
             logger.info("Processing Wanted Downloads")
@@ -417,20 +468,15 @@ class SonarrYTDL(object):
                             logger.info(
                                 "    {}: Found - {}:".format(e + 1, eps["title"])
                             )
+
+                            filename = self.get_episode_filename(ser, eps)
+                            logger.debug(f"Got filename: {filename}")
+
                             ytdl_format_options = {
                                 "format": self.ytdl_format,
                                 "quiet": True,
                                 "merge-output-format": "mkv",
-                                "outtmpl": "/sonarr_root{0}/{1}/{2} - S{3:02d}E{4:02d} - {5} - WEB-DL-SonarrYTDL.%(ext)s".format(
-                                    ser["path"],
-                                    "Specials"
-                                    if eps["seasonNumber"] == 0
-                                    else f"Season {eps['seasonNumber']}",
-                                    sanitize_str(ser["title"]),
-                                    eps["seasonNumber"],
-                                    eps["episodeNumber"],
-                                    sanitize_str(eps["title"]),
-                                ),
+                                "outtmpl": filename,
                                 "progress_hooks": [ytdl_hooks],
                                 "noplaylist": True,
                                 "retry_sleep": 5,
